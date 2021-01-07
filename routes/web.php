@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/', [ 'as' => 'search', 'uses' => 'CountryController@search']);
+Route::get('countries', [ 'as' => 'countries', 'uses' => 'CountryController@index']);
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
+

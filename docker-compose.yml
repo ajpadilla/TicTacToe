@@ -1,0 +1,76 @@
+version: '3'
+
+services:
+  nginx:
+    container_name: tictactoe_nginx
+    build:
+      context: ./docker/nginx
+      dockerfile: Dockerfile
+    ports:
+    - "8084:80"
+    volumes:
+    - ./:/var/www
+    links:
+    - app
+
+  app:
+    container_name: tictactoe_app
+    build:
+      context: ./docker/app
+      dockerfile: Dockerfile
+    working_dir: /var/www
+    volumes:
+    - ./:/var/www
+    - ./docker/app/custom.ini:/usr/local/etc/php/conf.d/custom.ini
+    depends_on:
+    - mariadb
+    - beanstalkd
+    - redis
+    environment:
+    - "APP_NAME=${APP_NAME}"
+    - "APP_ENV=${APP_ENV}"
+    - "APP_DEBUG=${APP_DEBUG}"
+    - "APP_KEY=${APP_KEY}"
+    - "DB_CONNECTION=${DB_CONNECTION}"
+    - "DB_HOST=${DB_HOST}"
+    - "DB_PORT=${DB_PORT}"
+    - "DB_DATABASE=${DB_DATABASE}"
+    - "DB_USERNAME=${DB_USERNAME}"
+    - "DB_PASSWORD=${DB_PASSWORD}"
+    - "CACHE_DRIVER=${CACHE_DRIVER}"
+    - "QUEUE_DRIVER=${QUEUE_DRIVER}"
+    - "REDIS_HOST=${REDIS_HOST}"
+    - "REDIS_PASSWORD=${REDIS_PASSWORD}"
+    - "REDIS_PORT=${REDIS_PORT}"
+
+
+  redis:
+    container_name: tictactoe_redis
+    image: redis:latest
+    ports:
+    - "6381:6379"
+    volumes:
+    - ./docker/data/redis:/data
+
+
+  beanstalkd:
+    container_name: tictactoe_beanstalkd
+    build:
+      context: docker/beanstalkd
+      dockerfile: Dockerfile
+    ports:
+    - "11302:11300"
+
+
+  mariadb:
+    container_name: tictactoe_mariadb
+    image: mariadb:10.2
+    environment:
+      MYSQL_ROOT_PASSWORD: qweasd123
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+    - ./docker/data/mariadb:/var/lib/mysql
+    ports:
+    - "3308:3306"

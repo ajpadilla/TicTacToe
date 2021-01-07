@@ -1,61 +1,91 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+## Herramientas necesarias
 
-## About Laravel
+Installar Docker
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Crear contenedores docker-compose
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Ejecute  ```docker-compose build``` para levantar los contenedores del proyecto 
 
-## Learning Laravel
+## Uso con Docker
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Abra el contenedor de la aplicacion e instale todas las dependencias ejecutando: 
+```
+docker-compose exec app sh
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Ejecute dentro del contenedor app 
+```
+composer install
+```
 
-## Laravel Sponsors
+Luego ir a `http://localhost:8084/` donde aparecera el formulario para realizar las búsqueda de países
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+## Ejecución de contenedor mariadb 
+Ejecute ```docker-compose exec mariadb bash``` para entrar al contenedor
 
-### Premium Partners
+Dentro del contenedor, inicie sesión en la cuenta administrativa root de MySQL:
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[OP.GG](https://op.gg)**
+```mysql -u root -p```
 
-## Contributing
+Se le solicitará la contraseña que estableció para la cuenta root de MySQL durante la instalación en el archivo docker-compose.
+user: root, password:qweasd123
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Comience revisando la base de datos llamada game, que definió en el archivo docker-compose. Ejecute el comando ```show databases``` para verificar las bases de datos existentes:
 
-## Code of Conduct
+A continuación, cree la cuenta de usuario que tendrá permisos de acceso a esta base de datos.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```GRANT ALL ON laravel.* TO 'root'@'%' IDENTIFIED BY 'qweasd123'```
 
-## Security Vulnerabilities
+Elimine los privilegios para notificar los cambios al servidor MySQL:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```FLUSH PRIVILEGES;```
 
-## License
+Cierre MySQL:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```EXIT;```
+
+Por último, cierre el contenedor:
+
+##Migrar datos
+Pruebe la conexión con MySQL ejecutando el comando Laravel ```php artisan migrate```, dentro del contenedor app y se creara dentro de la base de datos llamada game, la tabla countries
+
+
+## Ejecutar seeding
+
+Abra el contenedor de la aplicación ``` docker-compose exec app sh``` y corras los seed para cargar los datos de prueba ejecutando: 
+```php artisan db:seed``` o ```php artisan db:seed --class=CountriesSeeder```, verifique que los datos se almacenaron en la tabla countries de la base de datos llamada game en el contenedor mariadb .
+
+## Ejecución de pruebas
+Instale las dependencias si no lo ha hecho anteriormente:
+
+```
+composer install
+```
+
+
+## Ejecutar todas las pruebas PHPUnit 
+Entrar al contenedor de la aplicacion ejecutando
+```
+docker-compose exec app sh
+```
+luego ejecute ``` ./vendor/bin/phpunit ``` para correr todas la pruebas que se encuentran dentro de Tests\Unit\CountryTest;
+
+Puede filtrar cada prueba pasando el nombre de la misma, al parametro --filter, ejemplo: 
+
+```
+./vendor/bin/phpunit  --filter search_no_existing_countries
+```
+
+Detener a los contenedores:
+```
+docker-compose stop
+```
+
+Dando de baja a los contenedores: 
+
+```
+docker-compose down
+```
+

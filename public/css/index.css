@@ -1,0 +1,86 @@
+body{
+    background: blue;  /* fallback for old browsers */
+    font-color:#FDFDFE;
+    font-size:40px;
+    font-family:'Source Code Pro'
+}
+
+td {
+    background-color:white;
+    opacity:.2;
+    width:50px;
+    height:50px;
+    text-align:center;
+    font-family: 'Roboto', sans-serif;
+    color:white;
+}
+
+.text{
+    color: white;
+    opacity: 1;
+    /* z-index: 2; */
+    background-color: transparent;
+    border: none;
+}
+
+td:hover{
+    opacity:0.4;
+}
+
+.content{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display:block;
+}
+
+table{
+    width:300px;
+    height:300px;
+}
+
+.table_overlay{
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    width:300px;
+    height:300px;
+}
+
+
+btn{
+    position: relative;
+    top: 10px;
+    border-radius:7px;
+    padding:10px;
+    margin-top:10px;
+    color:white;
+    background-color:#EF798A;
+    cursor:pointer;
+}
+
+btn:hover{
+    background-color:#CC4C5E;
+}
+
+
+.button {
+    border: none;
+    background-color:#008CBA;
+    padding: 14px 28px;
+    font-size: 16px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+/* On mouse-over */
+.button:hover {background: #eee;}
+
+.success {color: green;}
+.info {color: dodgerblue;}
+.warning {color: orange;}
+.danger {color: red;}
+.default {color: black;}
