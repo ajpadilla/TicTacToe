@@ -3,6 +3,9 @@
 
 Installar Docker
 
+## .env
+Crear nuevo archivo .env y copiar el contenido del archivo .env.example. 
+
 
 ## Crear contenedores docker-compose
 
