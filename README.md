@@ -23,6 +23,11 @@ Ejecute dentro del contenedor app
 composer install
 ```
 
+Crear nueva key dentro del contenedor app 
+```
+php artisan key:generate
+```
+
 Luego ir a `http://localhost:8084/` donde aparecera el formulario para realizar las búsqueda de países
 
 ## Ejecución de contenedor mariadb 
